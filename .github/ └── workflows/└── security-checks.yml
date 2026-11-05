@@ -1,0 +1,83 @@
+name: Power BI Security Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  security-checks:
+    name: Validate committed files and TMDL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Identify changed files
+        id: changes
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+          fi
+
+          HEAD="${{ github.sha }}"
+
+          if [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            git ls-tree -r --name-only "$HEAD" > changed_files.txt
+          else
+            git diff --name-only "$BASE" "$HEAD" > changed_files.txt
+          fi
+
+          cat changed_files.txt
+
+      - name: Block sensitive data files
+        shell: bash
+        run: |
+          FAILED=0
+
+          while IFS= read -r file; do
+            case "$file" in
+              *.pbix|*.abf|*.xlsx|*.xls|*.xlsm|*.csv|*.tsv|*.parquet|*.db|*.sqlite|*.accdb)
+                if [[ "$(basename "$file")" == "probe.csv" ]]; then
+                  continue
+                fi
+                echo "::error file=$file::Sensitive data file detected."
+                FAILED=1
+                ;;
+              */.pbi/*|*/.pbi)
+                echo "::error file=$file::Power BI cache file detected."
+                FAILED=1
+                ;;
+            esac
+          done < changed_files.txt
+
+          if [ "$FAILED" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Check restricted TMDL patterns
+        shell: bash
+        run: |
+          FAILED=0
+
+          while IFS= read -r file; do
+            [[ "$file" == *.tmdl ]] || continue
+            [[ -f "$file" ]] || continue
+
+            if grep -Ein 'Binary\.FromText|DATATABLE[[:space:]]*\(' "$file"; then
+              echo "::error file=$file::Restricted TMDL pattern detected."
+              FAILED=1
+            fi
+          done < changed_files.txt
+
+          if [ "$FAILED" -ne 0 ]; then
+            exit 1
+          fi
