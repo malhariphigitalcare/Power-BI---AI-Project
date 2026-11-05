@@ -1,0 +1,59 @@
+table Sales
+	lineageTag: a9531bcc-9fbd-4a78-a496-226fdb8c9910
+
+	column OrderDate
+		dataType: int64
+		formatString: 0
+		lineageTag: 80325a6a-b207-4b77-a5bf-67537365debc
+		summarizeBy: sum
+		sourceColumn: OrderDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		lineageTag: 0be5f32c-b55b-4e4a-8b3a-f597c3ec4cd3
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: c4878652-cd85-4be8-b44a-3501fd4e1875
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 3790354c-15bd-4a3a-b07d-d7b1a6ab8a78
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Amount
+		dataType: int64
+		formatString: 0
+		lineageTag: 1f4d7fc9-b9e7-4ecf-8945-85307a26cf5c
+		summarizeBy: sum
+		sourceColumn: Amount
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\sullm\OneDrive\Documents\PBI-TEST\Data\Test_Sales.xlsx"), null, true),
+				    Sales_Sheet = Source{[Item="Sales",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sales_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"OrderDate", Int64.Type}, {"Product", type text}, {"Region", type text}, {"Quantity", Int64.Type}, {"Amount", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
