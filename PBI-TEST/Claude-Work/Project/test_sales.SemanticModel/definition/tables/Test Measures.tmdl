@@ -1,0 +1,22 @@
+table 'Test Measures'
+	lineageTag: 32628412-59c7-4317-869c-288c02ea76bb
+
+	/// Synthetic test measure: sum of Sales[Amount].
+	measure 'Total Amount' = SUM(Sales[Amount])
+		formatString: \$#,0
+		lineageTag: a03603b5-1f90-4767-bf6c-f366cccb6223
+
+	measure 'Average Sales Amount' = AVERAGE(Sales[Amount])
+		formatString: \$#,0.00
+		lineageTag: 37b424eb-4b7c-4527-9d41-f41e15dde958
+
+	column Dummy
+		isHidden
+		lineageTag: 858750a1-f765-43bf-931a-1685413370c1
+		summarizeBy: none
+		sourceColumn: [Dummy]
+
+	partition 'Test Measures' = calculated
+		mode: import
+		source = ROW("Dummy", BLANK())
+

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "bdb09f907d0fba1ae7a8",
+  "position": {
+    "x": 767.75557379520592,
+    "y": 162.60774887351548,
+    "z": 1,
+    "height": 238.76580847250372,
+    "width": 380.79029799494128,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Test Measures"
+                    }
+                  },
+                  "Property": "Average Sales Amount"
+                }
+              },
+              "queryRef": "Test Measures.Average Sales Amount",
+              "nativeQueryRef": "Average Sales Amount"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Test Measures"
+                  }
+                },
+                "Property": "Average Sales Amount"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "value": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "35D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "56dfee23d3306ceb1cd1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Test Measures"
+              }
+            },
+            "Property": "Average Sales Amount"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
